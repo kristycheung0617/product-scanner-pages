@@ -2,9 +2,8 @@ let products = [];
 const video = document.getElementById('video');
 const canvas = document.getElementById('photo');
 const preview = document.getElementById('preview');
-let latestBarcode = ''; // To store the latest scanned barcode
+let latestBarcode = '';
 
-// Initialize camera for phone (rear camera)
 async function initCamera() {
     try {
         const stream = await navigator.mediaDevices.getUserMedia({
@@ -16,12 +15,10 @@ async function initCamera() {
             scanBarcode();
         };
     } catch (err) {
-        console.error('Camera error:', err);
-        alert('Unable to access camera: ' + err.message);
+        alert('Camera error: ' + err.message);
     }
 }
 
-// Scan barcode
 async function scanBarcode() {
     if (!('BarcodeDetector' in window)) {
         alert('Barcode detection not supported!');
@@ -35,7 +32,7 @@ async function scanBarcode() {
             const barcodes = await detector.detect(video);
             if (barcodes.length > 0) {
                 latestBarcode = barcodes[0].rawValue;
-                document.getElementById('barcode').value = latestBarcode; // Auto-fill the barcode
+                document.getElementById('barcode').value = latestBarcode;
             }
         } catch (err) {
             console.error('Barcode scan error:', err);
@@ -43,7 +40,6 @@ async function scanBarcode() {
     }, 1000);
 }
 
-// Capture photo
 function capturePhoto() {
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
@@ -52,7 +48,6 @@ function capturePhoto() {
     preview.src = canvas.toDataURL('image/jpeg');
 }
 
-// Capture barcode
 function captureBarcode() {
     if (latestBarcode) {
         document.getElementById('barcode').value = latestBarcode;
@@ -61,42 +56,25 @@ function captureBarcode() {
     }
 }
 
-// Save product to server
-async function saveProduct() {
+function saveProduct() {
     const barcode = document.getElementById('barcode').value;
     if (!barcode) {
         alert('Please snap a barcode first!');
         return;
     }
-
     const product = {
         barcode: barcode,
         photo: preview.src,
         quantity: document.getElementById('quantity').value || '1',
         location: document.getElementById('location').value || 'Unknown',
-        timestamp: new Date().toISOString().replace(/[:.]/g, '-') // Safe filename
+        timestamp: new Date().toISOString()
     };
-
-    try {
-        const response = await fetch('/save-product', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(product)
-        });
-        const result = await response.json();
-        if (response.ok) {
-            alert(result.message);
-            clearForm();
-        } else {
-            alert('Error: ' + result.error);
-        }
-    } catch (err) {
-        console.error('Save error:', err);
-        alert('Failed to save product!');
-    }
+    products.push(product);
+    localStorage.setItem('products', JSON.stringify(products));
+    alert('Product saved on your phone!');
+    clearForm();
 }
 
-// Clear form
 function clearForm() {
     document.getElementById('barcode').value = '';
     document.getElementById('quantity').value = '';
@@ -105,20 +83,18 @@ function clearForm() {
     latestBarcode = '';
 }
 
-// Show records (not needed for server, but keeping it for now)
 function showRecords() {
     document.querySelector('.container').style.display = 'none';
     document.getElementById('records').style.display = 'block';
-    document.getElementById('recordsList').textContent = 'Records are saved as files on the server!';
+    products = JSON.parse(localStorage.getItem('products') || '[]');
+    document.getElementById('recordsList').textContent = JSON.stringify(products, null, 2);
 }
 
-// Hide records
 function hideRecords() {
     document.getElementById('records').style.display = 'none';
     document.querySelector('.container').style.display = 'block';
 }
 
-// Start the app
 window.onload = () => {
     initCamera();
 };
