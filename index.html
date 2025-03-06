@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Phone Product Scanner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 10px;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        video {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            border: 2px solid #333;
+            background-color: black;
+        }
+        .container {
+            width: 100%;
+            max-width: 400px;
+        }
+        .form-group {
+            margin: 10px 0;
+        }
+        input, button {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #preview {
+            width: 100%;
+            max-width: 200px;
+            display: block;
+            margin: 10px auto;
+        }
+        #records {
+            display: none;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Phone Product Scanner</h2>
+        
+        <div class="form-group">
+            <video id="video" autoplay playsinline muted></video>
+        </div>
+
+        <div class="form-group">
+            <button onclick="capturePhoto()">Snap Photo</button>
+            <button onclick="captureBarcode()">Snap Barcode</button> <!-- New Snap Barcode Button! -->
+        </div>
+
+        <div class="form-group">
+            <label>Barcode:</label>
+            <input type="text" id="barcode" readonly>
+        </div>
+
+        <div class="form-group">
+            <label>Photo:</label>
+            <img id="preview" src="" alt="Captured photo">
+            <canvas id="photo" style="display: none;"></canvas>
+        </div>
+
+        <div class="form-group">
+            <label>Quantity:</label>
+            <input type="number" id="quantity" min="1" placeholder="Enter quantity">
+        </div>
+
+        <div class="form-group">
+            <label>Location Shelf:</label>
+            <input type="text" id="location" placeholder="Enter location">
+        </div>
+
+        <div class="form-group">
+            <button onclick="saveProduct()">Save Product</button>
+            <button onclick="clearForm()">New Scan</button>
+            <button onclick="showRecords()">View Records</button>
+        </div>
+
+        <div id="records">
+            <h3>Saved Products</h3>
+            <pre id="recordsList"></pre>
+            <button onclick="hideRecords()">Back</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
