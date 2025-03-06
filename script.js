@@ -27,12 +27,15 @@ async function scanBarcode() {
         alert('Barcode detection not supported!');
         return;
     }
-    const detector = new BarcodeDetector({ formats: ['ean_13', 'code_128', 'qr_code'] });
+    const detector = new BarcodeDetector({ 
+        formats: ['ean_13', 'code_128', 'qr_code', 'upc_a', 'upc_e', 'ean_8', 'code_39', 'code_93'] 
+    });
     setInterval(async () => {
         try {
             const barcodes = await detector.detect(video);
             if (barcodes.length > 0) {
                 latestBarcode = barcodes[0].rawValue;
+                document.getElementById('barcode').value = latestBarcode; // Auto-fill the barcode
             }
         } catch (err) {
             console.error('Barcode scan error:', err);
